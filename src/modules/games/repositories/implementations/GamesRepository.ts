@@ -13,7 +13,15 @@ export class GamesRepository implements IGamesRepository {
   }
 
   async findByTitleContaining(param: string): Promise<Game[]> {
-      // Complete usando query builder
+      let game = await this.repository
+      .createQueryBuilder('games')
+      .where(`title LIKE :title`,{title: `%${param}%`})
+      .getMany();
+      
+      // console.log(game);
+
+      // return game;
+      return [];
   }
 
   //OK
@@ -23,14 +31,14 @@ export class GamesRepository implements IGamesRepository {
 
   async findUsersByGameId(id: string): Promise<User[]> {
     const users = await this.repository
-    .createQueryBuilder('games')
-    .select("'users.email', 'users.first_name', 'users.last_name'")
-    // .from(User, 'users')
-    .innerJoin('users_games_games', 'users_games_games', 'users_games_games.gamesId = games.id')
-    .innerJoin('users', 'users', 'users.id = users_games_games.usersId')
+    .createQueryBuilder('users')
+    .select('users.*')
+    .from('users', 'users')
+    // .innerJoin('users_games_games', 'users_games_games', 'users_games_games.gamesId = games.id')
+    // .innerJoin('users', 'users', 'users.id = users_games_games.usersId')
     .where('games.id = :game_id', {game_id: id})
-    .getSql();
-    // .getMany();
+    // .getSql();
+    .getMany();
 
     console.log(users);
 
